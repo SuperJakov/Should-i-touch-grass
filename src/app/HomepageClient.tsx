@@ -236,8 +236,8 @@ export default function HomePageClient({
                 Should I Touch Grass? 🌿
               </h1>
               <p className="mt-4 text-lg text-slate-400">
-                For chronic Redditors, Discord mods, and professional gamers. Is
-                it safe to venture out? Let&apos;s find out.
+                For Redditors, Discord mods, and professional gamers. Is it safe
+                to go out? Let&apos;s find out.
               </p>
             </div>
 
