@@ -54,7 +54,7 @@ const getMemeMessage = (verdict: "Yes" | "No"): string => {
       "Leave the goblin cave. Vitamin D awaits.",
       "It's a beautiful day to log off.",
     ];
-    return messages[Math.floor(Math.random() * messages.length)];
+    return messages[Math.floor(Math.random() * messages.length)]!;
   } else {
     const messages = [
       "Nah. Stay inside, the world is buffering.",
@@ -63,7 +63,7 @@ const getMemeMessage = (verdict: "Yes" | "No"): string => {
       "Stay indoors and farm some XP. The weather is currently OP.",
       "This is fine. 🔥 Your PC is warmer anyway.",
     ];
-    return messages[Math.floor(Math.random() * messages.length)];
+    return messages[Math.floor(Math.random() * messages.length)]!;
   }
 };
 
@@ -192,6 +192,7 @@ export default function HomePageClient({
       setError(
         "Yikes. The API is probably down. Maybe just look out the window? 🤷‍♂️",
       );
+      console.error(e);
     } finally {
       setIsLoading(false);
     }
@@ -236,7 +237,7 @@ export default function HomePageClient({
               </h1>
               <p className="mt-4 text-lg text-slate-400">
                 For chronic Redditors, Discord mods, and professional gamers. Is
-                it safe to venture out? Let's find out.
+                it safe to venture out? Let&apos;s find out.
               </p>
             </div>
 
