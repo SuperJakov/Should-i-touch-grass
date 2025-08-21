@@ -222,7 +222,12 @@ export default function HomePageClient({
       const data = await apiCall;
       setResult(data);
     } catch (e: unknown) {
-      setError("Yikes. The API is down. Maybe just look out the window? 🤷‍♂️");
+      if (e instanceof Error && e.message.startsWith("Could not find city")) {
+        setError(e.message);
+      } else {
+        setError("Yikes. The API is down. Maybe just look out the window? 🤷‍♂️");
+      }
+      setResult(null);
       console.error(e);
     } finally {
       setIsLoading(false);
