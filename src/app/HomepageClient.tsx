@@ -6,11 +6,12 @@ import {
   Cloud,
   MapPin,
   Wind,
-  Navigation,
+  Crosshair, // Changed from 'Navigation'
   Cloudy,
   CloudRain,
   Snowflake,
   Zap,
+  Search,
   type LucideIcon,
 } from "lucide-react";
 import {
@@ -55,7 +56,6 @@ const getMemeMessage = (verdict: "Yes" | "No"): string => {
       "Permission granted. The sun is rendering at max settings.",
       "Go on, the real world has better graphics anyway.",
       "Leave the goblin cave. Vitamin D awaits.",
-      "It's a beautiful day to log off.",
     ];
     return messages[Math.floor(Math.random() * messages.length)]!;
   } else {
@@ -64,7 +64,6 @@ const getMemeMessage = (verdict: "Yes" | "No"): string => {
       "It's a no from me, dawg. The conditions are cringe.",
       "The outside has skill-based matchmaking today, and it's not in your favor.",
       "Stay indoors and farm some XP. The weather is currently OP.",
-      "This is fine. 🔥 Your PC is warmer anyway.",
     ];
     return messages[Math.floor(Math.random() * messages.length)]!;
   }
@@ -73,57 +72,57 @@ const getMemeMessage = (verdict: "Yes" | "No"): string => {
 // --- UI COMPONENTS ---
 
 /**
- * Main Result Card: Displays the detailed verdict for the searched location.
+ * Main Result Card: A more compact card for the primary result.
  */
 const ResultCard: React.FC<ResultCardProps> = ({ result }) => {
   const isYes = result.verdict === "Yes";
   const WeatherIcon = getWeatherIcon(result.weather);
-  const memeMessage = getMemeMessage(result.verdict); // Get our fresh meme message
+  const memeMessage = getMemeMessage(result.verdict);
 
   const cardClasses = isYes
     ? "bg-green-900/60 shadow-green-500/20"
-    : "bg-slate-800/80 shadow-slate-900/40";
-
-  const verdictTextClasses = isYes ? "text-green-300" : "text-slate-300";
+    : "bg-red-900/60 shadow-red-500/20";
+  const verdictTextClasses = isYes ? "text-green-300" : "text-red-300";
 
   return (
     <div
-      className={`animate-fade-in-up w-full max-w-lg transform rounded-3xl p-8 shadow-2xl ring-1 ring-white/10 backdrop-blur-sm transition-all duration-500 ${cardClasses}`}
+      className={`animate-fade-in flex h-full w-full flex-col justify-between rounded-2xl p-6 shadow-2xl ring-1 ring-white/10 backdrop-blur-sm transition-all duration-500 ${cardClasses}`}
     >
       <div className="text-center">
-        <div className="mb-4">
-            <p className="text-xl font-medium text-white/80">{result.city}</p>
-            <p className="text-md font-medium text-white/70 flex items-center justify-center gap-2">
-              <span>{result.countryFlag}</span>
-            </p>
-          </div>
+        <p className="text-xl font-medium text-white/90">{result.city}</p>
+
+        <p className="text-md font-medium text-white/70">
+          {result.countryFlag}
+        </p>
+
         <h2
-          className={`my-4 text-7xl font-bold md:text-8xl ${verdictTextClasses}`}
+          className={`my-2 text-7xl font-bold md:text-8xl ${verdictTextClasses}`}
         >
           {result.verdict}
         </h2>
-        {/* We use our meme message here instead of the API's */}
-        <p className="text-lg text-white/90">{memeMessage}</p>
+        <p className="text-md text-white/80">{memeMessage}</p>
       </div>
 
-      <div className="mt-10 grid grid-cols-3 gap-4 border-t border-white/10 pt-8 text-center">
-        <div className="flex flex-col items-center gap-2">
-          <WeatherIcon size={28} className="text-white/80" />
-          <span className="text-lg font-bold">{result.weather}</span>
+      <div className="mt-6 grid grid-cols-3 gap-4 border-t border-white/10 pt-6 text-center">
+        <div className="flex flex-col items-center gap-1">
+          <WeatherIcon size={24} className="text-white/80" />
+          <span className="text-md font-bold">{result.weather}</span>
           <span className="text-xs tracking-widest text-white/60 uppercase">
             Weather
           </span>
         </div>
-        <div className="flex flex-col items-center gap-2">
-          <Wind size={28} className="text-white/80" />
-          <span className="text-lg font-bold">{result.aqi}</span>
+
+        <div className="flex flex-col items-center gap-1">
+          <Wind size={24} className="text-white/80" />
+          <span className="text-md font-bold">{result.aqi}</span>
           <span className="text-xs tracking-widest text-white/60 uppercase">
             AQI
           </span>
         </div>
-        <div className="flex flex-col items-center gap-2">
-          <Cloud size={28} className="text-white/80" />
-          <span className="text-lg font-bold">{result.temp}</span>
+
+        <div className="flex flex-col items-center gap-1">
+          <Cloud size={24} className="text-white/80" />
+          <span className="text-md font-bold">{result.temp}</span>
           <span className="text-xs tracking-widest text-white/60 uppercase">
             Temp
           </span>
@@ -140,35 +139,58 @@ const CompactResultCard: React.FC<CompactResultCardProps> = ({ result }) => {
   const isYes = result.verdict === "Yes";
   const cardClasses = isYes
     ? "bg-green-900/50 hover:bg-green-900/80"
-    : "bg-slate-800/50 hover:bg-slate-800/80";
-
+    : "bg-red-900/50 hover:bg-red-900/80";
   return (
     <div
-      className={`rounded-2xl p-5 text-center ring-1 ring-white/10 transition-all duration-300 ${cardClasses}`}
+      className={`rounded-lg p-3 text-center ring-1 ring-white/10 transition-all duration-300 ${cardClasses}`}
     >
-      <h4 className="text-lg font-bold text-white">{result.city}</h4>
-        <p className="text-sm text-white/70 flex items-center justify-center gap-1">
-          <span>{result.countryFlag}</span>
-        </p>
+      <h4 className="text-md truncate font-bold text-white">{result.city}</h4>
+
       <p
-        className={`text-3xl font-bold ${isYes ? "text-green-300" : "text-slate-300"}`}
+        className={`text-2xl font-bold ${isYes ? "text-green-300" : "text-red-300"}`}
       >
         {result.verdict}
       </p>
-      <p className="text-sm text-white/70">{result.temp}</p>
+      <p className="text-xs text-white/70">{result.temp}</p>
     </div>
   );
 };
 
 /**
+ * Placeholder card for the initial view.
+ */
+const WelcomeCard = () => (
+  <div className="animate-fade-in flex h-full flex-col items-center justify-center rounded-2xl bg-slate-800/80 p-6 text-center ring-1 ring-white/10">
+    <Image src={AppLogo} alt="App Logo" className="h-24 w-auto" />
+    <h2 className="mt-4 text-2xl font-bold text-white">
+      Is it safe to venture out?
+    </h2>
+
+    <p className="text-white/70">
+      Use the search bar above to check the outdoor conditions.
+    </p>
+  </div>
+);
+
+/**
  * Loading Spinner Component
  */
 const LoadingSpinner = () => (
-  <div className="flex w-full flex-col items-center justify-center gap-6 text-center">
-    <div className="h-20 w-20 animate-spin rounded-full border-4 border-slate-600 border-t-green-500"></div>
-    <p className="text-xl font-medium text-slate-300">
+  <div className="flex h-full w-full flex-col items-center justify-center gap-4 rounded-2xl bg-slate-800/80 text-center ring-1 ring-white/10">
+    <div className="h-16 w-16 animate-spin rounded-full border-4 border-slate-600 border-t-green-500" />
+
+    <p className="text-lg font-medium text-slate-300">
       Calibrating the grass-o-meter... 🤔
     </p>
+  </div>
+);
+
+/**
+ * Error Display Component
+ */
+const ErrorDisplay = ({ message }: { message: string }) => (
+  <div className="animate-fade-in bg-destructive/40 ring-destructive flex h-full flex-col items-center justify-center rounded-2xl p-6 text-center ring-1">
+    <p className="text-destructive-foreground">{message}</p>
   </div>
 );
 
@@ -182,9 +204,6 @@ export default function HomePageClient({
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [result, setResult] = useState<VerdictResponse | null>(null);
   const [error, setError] = useState<string>("");
-  
-  // Ref for scrolling to results
-  const resultRef = React.useRef<HTMLDivElement>(null);
 
   const popularCities: string[] = [
     "New York",
@@ -203,46 +222,29 @@ export default function HomePageClient({
       const data = await apiCall;
       setResult(data);
     } catch (e: unknown) {
-      setError(
-        "Yikes. The API is probably down. Maybe just look out the window? 🤷‍♂️",
-      );
+      setError("Yikes. The API is down. Maybe just look out the window? 🤷‍♂️");
       console.error(e);
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Scroll to results when they appear
-  React.useEffect(() => {
-    if (result && resultRef.current) {
-      resultRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
-  }, [result]);
-
   const handleSearch = (e: React.FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
     if (!location) {
-      setError("Bro, you gotta enter a location. I'm not a mind reader.");
+      setError("Bro, you gotta enter a location.");
       return;
     }
     void handleApiCall(getVerdictForCityAction(location));
   };
 
   const handleUseMyLocation = (): void => {
-    if (!navigator.geolocation) {
-      setError("Your browser is ancient. Geolocation is not supported.");
-      return;
-    }
     navigator.geolocation.getCurrentPosition(
       (position) => {
         const { latitude, longitude } = position.coords;
         void handleApiCall(getVerdictForCoordsAction(latitude, longitude));
       },
-      () => {
-        setError(
-          "Permission denied. I guess you don't want me to stalk you. Fair.",
-        );
-      },
+      () => setError("Geolocation permission denied. I can't stalk you now."),
     );
   };
 
@@ -251,103 +253,91 @@ export default function HomePageClient({
   };
 
   return (
-    <main className="text-foreground bg-background flex min-h-screen w-full flex-col items-center justify-center p-6 font-sans sm:p-8">
-      <div className="w-full max-w-lg space-y-12">
-        {/* --- INITIAL VIEW & SEARCH FORM --- */}
-        {!result && !isLoading && (
-          <div className="animate-fade-in space-y-8 text-center">
-            <div>
-              <div className="flex flex-col items-center space-y-4 md:flex-row md:space-y-0 md:space-x-4">
-                <h1 className="text-foreground text-5xl leading-none font-extrabold tracking-tight md:text-6xl">
-                  Should I Touch Grass?
-                </h1>
-                <Image src={AppLogo} alt="App Logo" className="h-16 w-auto" />
-              </div>
-              <p className="mt-4 text-lg">
-                For Redditors, Discord mods, and professional gamers. Is it safe
-                to go out?
-              </p>
-            </div>
+    <main className="text-foreground bg-background flex min-h-screen w-full flex-col items-center justify-center p-4 font-sans">
+      <div className="w-full max-w-5xl rounded-2xl bg-slate-900/60 p-5 shadow-2xl ring-1 ring-white/10 backdrop-blur-lg md:p-8">
+        {/* --- HEADER & SEARCH --- */}
+        <div className="mb-6 flex flex-col items-center justify-between gap-4 md:flex-row">
+          <div className="flex items-center gap-3 self-start">
+            <h1 className="text-foreground text-2xl font-extrabold tracking-tight">
+              Should I Touch Grass?
+            </h1>
+          </div>
 
-            <form onSubmit={handleSearch} className="space-y-4">
-              <div className="relative">
-                <MapPin
-                  className="absolute top-1/2 left-4 -translate-y-1/2"
-                  size={20}
-                />
-                <input
-                  type="text"
-                  value={location}
-                  onChange={(e) => setLocation(e.target.value)}
-                  placeholder="Enter your city..."
-                  className="border-border bg-muted focus:ring-ring placeholder:text-muted-foreground text-foreground w-full rounded-full border-2 py-3.5 pr-4 pl-12 transition focus:ring-2 focus:outline-none"
-                />
-              </div>
-              <button
-                type="submit"
-                className="bg-accent text-accent-foreground w-full cursor-pointer rounded-full px-4 py-3.5 font-bold transition-all duration-200 hover:scale-105 active:scale-100"
-              >
-                Check Conditions
-              </button>
-            </form>
+          <form onSubmit={handleSearch} className="flex w-full gap-2 md:w-auto">
+            <div className="relative flex-grow">
+              <MapPin
+                className="absolute top-1/2 left-3 -translate-y-1/2 text-white/50"
+                size={20}
+              />
 
-            <div className="flex items-center">
-              <div className="border-border flex-grow border-t"></div>
-              <span className="mx-4 flex-shrink text-sm">OR</span>
-              <div className="border-border flex-grow border-t"></div>
+              <input
+                type="text"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                placeholder="Enter a city..."
+                className="border-border bg-muted/50 focus:ring-ring w-full rounded-full border-2 py-2 pr-4 pl-10 transition focus:ring-2 focus:outline-none"
+              />
             </div>
 
             <button
-              onClick={handleUseMyLocation}
-              className="hover:bg-secondary/90 bg-secondary text-secondary-foreground flex w-full cursor-pointer items-center justify-center gap-2 rounded-full px-4 py-3.5 font-bold transition-all duration-200 hover:scale-105 active:scale-100"
+              type="submit"
+              className="bg-accent text-accent-foreground grid h-10 w-10 flex-shrink-0 cursor-pointer place-items-center rounded-full font-bold transition-all hover:scale-105 active:scale-100"
             >
-              <Navigation size={18} />
-              Use My Current Location
+              <Search size={20} />
+            </button>
+
+            <button
+              type="button"
+              onClick={handleUseMyLocation}
+              className="bg-secondary text-secondary-foreground grid h-10 w-10 flex-shrink-0 cursor-pointer place-items-center rounded-full font-bold transition-all hover:scale-105 active:scale-100"
+              title="Use my device's location"
+              aria-label="Use my device's location"
+            >
+              <Crosshair size={18} />
+            </button>
+          </form>
+        </div>
+        {/* --- MAIN CONTENT GRID --- */}
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-5">
+          {/* --- LEFT COLUMN (Result Area) --- */}
+          <div className="min-h-[350px] md:col-span-3">
+            {isLoading ? <LoadingSpinner /> : null}
+            {error ? <ErrorDisplay message={error} /> : null}
+            {result ? <ResultCard result={result} /> : null}
+            {!isLoading && !error && !result ? <WelcomeCard /> : null}
+          </div>
+          {/* --- RIGHT COLUMN (Popular/Random) --- */}
+          <div className="flex flex-col gap-4 md:col-span-2">
+            <div>
+              <h3 className="mb-3 text-center text-lg font-bold text-white/90 md:text-left">
+                Popular Cities
+              </h3>
+
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-2">
+                {popularCities.map((city) => (
+                  <div key={city}>
+                    {initialPopularStatuses[city] ? (
+                      <CompactResultCard
+                        result={initialPopularStatuses[city]}
+                      />
+                    ) : (
+                      <div className="flex h-full animate-pulse items-center justify-center rounded-lg bg-slate-800/50 p-3 text-xs">
+                        {city}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <button
+              onClick={handleRandomCity}
+              disabled={isLoading}
+              className="mt-auto w-full cursor-pointer rounded-full bg-purple-500 px-4 py-3 font-bold text-white transition-all duration-200 hover:scale-105 hover:bg-purple-600 active:scale-100 disabled:scale-100 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {isLoading ? "Searching..." : "🌍 Give me a random one"}
             </button>
           </div>
-        )}
-
-        {/* --- LOADING, ERROR & RESULT STATES --- */}
-        <div ref={resultRef}>
-          {isLoading && <LoadingSpinner />}
-          {error && (
-            <p className="animate-fade-in bg-destructive text-destructive-foreground rounded-lg p-4 text-center">
-              {error}
-            </p>
-          )}
-          {result && <ResultCard result={result} />}
-        </div>
-
-        {/* --- POPULAR CITIES SECTION --- */}
-        <div className="w-full pt-8">
-          <h3 className="mb-6 text-center text-xl font-bold">Popular Cities</h3>
-          <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
-            {popularCities.map((city) => {
-              const status = initialPopularStatuses[city];
-              return (
-                <div key={city}>
-                  {status ? (
-                    <CompactResultCard result={status} />
-                  ) : (
-                    <div className="flex h-full items-center justify-center rounded-2xl text-sm">
-                      Loading...
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* --- RANDOM CITY BUTTON --- */}
-        <div className="w-full pt-2">
-          <button
-            onClick={handleRandomCity}
-            disabled={isLoading}
-            className="bg-purple-500 text-white hover:bg-purple-600 disabled:opacity-50 disabled:cursor-not-allowed w-full cursor-pointer rounded-full px-4 py-3.5 font-bold transition-all duration-200 disabled:scale-100 hover:scale-105 active:scale-100"
-          >
-            {isLoading ? "Searching the globe..." : "🌍 Give me a random one"}
-          </button>
         </div>
       </div>
     </main>
