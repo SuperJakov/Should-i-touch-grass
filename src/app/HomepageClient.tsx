@@ -228,28 +228,28 @@ export default function HomePageClient({
   };
 
   return (
-    <main className="flex min-h-screen w-full flex-col items-center justify-center bg-slate-900 p-6 font-sans text-white sm:p-8">
+    <main className="text-foreground bg-background flex min-h-screen w-full flex-col items-center justify-center p-6 font-sans sm:p-8">
       <div className="w-full max-w-lg space-y-12">
         {/* --- INITIAL VIEW & SEARCH FORM --- */}
         {!result && !isLoading && (
           <div className="animate-fade-in space-y-8 text-center">
             <div>
-              <div className="flex flex-col items-center space-y-4 md:flex-row md:space-x-4 md:space-y-0">
-                <h1 className="text-5xl leading-none font-extrabold tracking-tight text-slate-100 md:text-6xl">
+              <div className="flex flex-col items-center space-y-4 md:flex-row md:space-y-0 md:space-x-4">
+                <h1 className="text-foreground text-5xl leading-none font-extrabold tracking-tight md:text-6xl">
                   Should I Touch Grass?
                 </h1>
                 <Image src={AppLogo} alt="App Logo" className="h-16 w-auto" />
               </div>
-              <p className="mt-4 text-lg text-slate-400">
+              <p className="mt-4 text-lg">
                 For Redditors, Discord mods, and professional gamers. Is it safe
-                to go out? Let&apos;s find out.
+                to go out?
               </p>
             </div>
 
             <form onSubmit={handleSearch} className="space-y-4">
               <div className="relative">
                 <MapPin
-                  className="absolute top-1/2 left-4 -translate-y-1/2 text-slate-500"
+                  className="absolute top-1/2 left-4 -translate-y-1/2"
                   size={20}
                 />
                 <input
@@ -257,28 +257,26 @@ export default function HomePageClient({
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
                   placeholder="Enter your city..."
-                  className="w-full rounded-full border-2 border-slate-700 bg-slate-800/50 py-3.5 pr-4 pl-12 text-white transition placeholder:text-slate-500 focus:border-green-500 focus:ring-2 focus:ring-green-500/50 focus:outline-none"
+                  className="border-border bg-muted focus:ring-ring placeholder:text-muted-foreground text-foreground w-full rounded-full border-2 py-3.5 pr-4 pl-12 transition focus:ring-2 focus:outline-none"
                 />
               </div>
               <button
                 type="submit"
-                className="w-full rounded-full bg-green-600 px-4 py-3.5 font-bold text-white transition-all duration-200 hover:scale-105 hover:bg-green-500 active:scale-100"
+                className="bg-accent text-accent-foreground w-full cursor-pointer rounded-full px-4 py-3.5 font-bold transition-all duration-200 hover:scale-105 active:scale-100"
               >
                 Check Conditions
               </button>
             </form>
 
             <div className="flex items-center">
-              <div className="flex-grow border-t border-slate-700"></div>
-              <span className="mx-4 flex-shrink text-sm text-slate-500">
-                OR
-              </span>
-              <div className="flex-grow border-t border-slate-700"></div>
+              <div className="border-border flex-grow border-t"></div>
+              <span className="mx-4 flex-shrink text-sm">OR</span>
+              <div className="border-border flex-grow border-t"></div>
             </div>
 
             <button
               onClick={handleUseMyLocation}
-              className="flex w-full items-center justify-center gap-2 rounded-full bg-slate-700/80 px-4 py-3.5 font-bold text-white transition-all duration-200 hover:scale-105 hover:bg-slate-700 active:scale-100"
+              className="hover:bg-secondary/90 bg-secondary text-secondary-foreground flex w-full cursor-pointer items-center justify-center gap-2 rounded-full px-4 py-3.5 font-bold transition-all duration-200 hover:scale-105 active:scale-100"
             >
               <Navigation size={18} />
               Use My Current Location
@@ -289,7 +287,7 @@ export default function HomePageClient({
         {/* --- LOADING, ERROR & RESULT STATES --- */}
         {isLoading && <LoadingSpinner />}
         {error && (
-          <p className="animate-fade-in rounded-lg bg-red-500/10 p-4 text-center text-red-400">
+          <p className="animate-fade-in bg-destructive text-destructive-foreground rounded-lg p-4 text-center">
             {error}
           </p>
         )}
@@ -297,9 +295,7 @@ export default function HomePageClient({
 
         {/* --- POPULAR CITIES SECTION --- */}
         <div className="w-full pt-8">
-          <h3 className="mb-6 text-center text-xl font-bold text-slate-300">
-            Popular Cities
-          </h3>
+          <h3 className="mb-6 text-center text-xl font-bold">Popular Cities</h3>
           <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
             {popularCities.map((city) => {
               const status = initialPopularStatuses[city];
@@ -308,7 +304,7 @@ export default function HomePageClient({
                   {status ? (
                     <CompactResultCard result={status} />
                   ) : (
-                    <div className="flex h-full items-center justify-center rounded-2xl bg-slate-800/50 text-sm text-slate-400">
+                    <div className="flex h-full items-center justify-center rounded-2xl text-sm">
                       Loading...
                     </div>
                   )}
