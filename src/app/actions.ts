@@ -73,12 +73,14 @@ const getAqiString = (aqi: number): string => {
  */
 const getCountryFlag = (countryCode: string): string => {
   if (countryCode.length !== 2) return "🏳️"; // Default
-  
+
   const upperCaseCode = countryCode.toUpperCase();
   if (!/^[A-Z]{2}$/.test(upperCaseCode)) return "🏳️"; // Default
-  
+
   const offset = 127397; // Unicode offset for regional indicators
-  const codePoints = Array.from(upperCaseCode).map(c => c.charCodeAt(0) + offset);
+  const codePoints = Array.from(upperCaseCode).map(
+    (c) => c.charCodeAt(0) + offset,
+  );
   return String.fromCodePoint(...codePoints);
 };
 
@@ -224,11 +226,56 @@ export async function getVerdictForCityAction(
 
 // List of randomly selectable cities worldwide for the random functionality
 const RANDOM_CITIES = [
-  "Tokyo", "Jakarta", "Delhi", "Manila", "Shanghai", "Sao Paulo", "Mumbai", "Beijing", "Dhaka", "Osaka", 
-  "New York", "Karachi", "Buenos Aires", "Chongqing", "Istanbul", "Kolkata", "Manila", "Lagos", "Rio de Janeiro", "Tianjin",
-  "Guangzhou", "Los Angeles", "Moscow", "Shenzhen", "Lahore", "Bangalore", "Paris", "Bogota", "Jakarta", "Chennai",
-  "Lima", "Bangkok", "Seoul", "Nagoya", "Hyderabad", "Chicago", "Johannesburg", "Wuhan", "Kuala Lumpur", "Hangzhou",
-  "Tongshan", "Hong Kong", "Quanzhou", "Dongguan", "Santiago", "Shenyang", "Madrid", "Fuzhou", "Xianyang", "Luanda"
+  "Tokyo",
+  "Jakarta",
+  "Delhi",
+  "Manila",
+  "Shanghai",
+  "Sao Paulo",
+  "Mumbai",
+  "Beijing",
+  "Dhaka",
+  "Osaka",
+  "New York",
+  "Karachi",
+  "Buenos Aires",
+  "Chongqing",
+  "Istanbul",
+  "Kolkata",
+  "Manila",
+  "Lagos",
+  "Rio de Janeiro",
+  "Tianjin",
+  "Guangzhou",
+  "Los Angeles",
+  "Moscow",
+  "Shenzhen",
+  "Lahore",
+  "Bangalore",
+  "Paris",
+  "Bogota",
+  "Jakarta",
+  "Chennai",
+  "Lima",
+  "Bangkok",
+  "Seoul",
+  "Nagoya",
+  "Hyderabad",
+  "Chicago",
+  "Johannesburg",
+  "Wuhan",
+  "Kuala Lumpur",
+  "Hangzhou",
+  "Tongshan",
+  "Hong Kong",
+  "Quanzhou",
+  "Dongguan",
+  "Santiago",
+  "Shenyang",
+  "Madrid",
+  "Fuzhou",
+  "Xianyang",
+  "Luanda",
 ];
 
 /**
@@ -238,8 +285,9 @@ const RANDOM_CITIES = [
  */
 export async function getRandomCityVerdictAction(): Promise<VerdictResponse> {
   // Select a random city from the predefined list
-  const randomCity = RANDOM_CITIES[Math.floor(Math.random() * RANDOM_CITIES.length)]!;
-  
+  const randomCity =
+    RANDOM_CITIES[Math.floor(Math.random() * RANDOM_CITIES.length)]!;
+
   // Reuse the existing city verdict logic
   return getVerdictForCityAction(randomCity);
 }

@@ -92,12 +92,11 @@ const ResultCard: React.FC<ResultCardProps> = ({ result }) => {
     >
       <div className="text-center">
         <div className="mb-4">
-          <p className="text-xl font-medium text-white/80">{result.city}</p>
-          <p className="text-md font-medium text-white/70 flex items-center justify-center gap-2">
-            <span>{result.countryFlag}</span>
-            <span>{result.country}</span>
-          </p>
-        </div>
+            <p className="text-xl font-medium text-white/80">{result.city}</p>
+            <p className="text-md font-medium text-white/70 flex items-center justify-center gap-2">
+              <span>{result.countryFlag}</span>
+            </p>
+          </div>
         <h2
           className={`my-4 text-7xl font-bold md:text-8xl ${verdictTextClasses}`}
         >
@@ -148,10 +147,9 @@ const CompactResultCard: React.FC<CompactResultCardProps> = ({ result }) => {
       className={`rounded-2xl p-5 text-center ring-1 ring-white/10 transition-all duration-300 ${cardClasses}`}
     >
       <h4 className="text-lg font-bold text-white">{result.city}</h4>
-      <p className="text-sm text-white/70 flex items-center justify-center gap-1">
-        <span>{result.countryFlag}</span>
-        <span>{result.country}</span>
-      </p>
+        <p className="text-sm text-white/70 flex items-center justify-center gap-1">
+          <span>{result.countryFlag}</span>
+        </p>
       <p
         className={`text-3xl font-bold ${isYes ? "text-green-300" : "text-slate-300"}`}
       >
