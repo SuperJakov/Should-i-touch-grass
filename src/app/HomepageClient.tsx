@@ -18,6 +18,8 @@ import {
   getVerdictForCoordsAction,
   type VerdictResponse,
 } from "./actions";
+import Image from "next/image";
+import AppLogo from "public/logo.png";
 
 // --- PROPS INTERFACES ---
 interface ResultCardProps {
@@ -232,9 +234,12 @@ export default function HomePageClient({
         {!result && !isLoading && (
           <div className="animate-fade-in space-y-8 text-center">
             <div>
-              <h1 className="text-5xl font-extrabold tracking-tight text-slate-100 md:text-6xl">
-                Should I Touch Grass? 🌿
-              </h1>
+              <div className="flex flex-col items-center space-y-4 md:flex-row md:space-x-4 md:space-y-0">
+                <h1 className="text-5xl leading-none font-extrabold tracking-tight text-slate-100 md:text-6xl">
+                  Should I Touch Grass?
+                </h1>
+                <Image src={AppLogo} alt="App Logo" className="h-16 w-auto" />
+              </div>
               <p className="mt-4 text-lg text-slate-400">
                 For Redditors, Discord mods, and professional gamers. Is it safe
                 to go out? Let&apos;s find out.
