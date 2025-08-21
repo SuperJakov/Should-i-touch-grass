@@ -233,8 +233,10 @@ export default function HomePageClient({
     e.preventDefault();
     if (!location) {
       setError("Bro, you gotta enter a location.");
+      setResult(null);
       return;
     }
+    setError("");
     void handleApiCall(getVerdictForCityAction(location));
   };
 
