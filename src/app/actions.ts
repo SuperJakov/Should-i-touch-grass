@@ -44,12 +44,6 @@ export interface VerdictResponse {
   temp: string;
 }
 
-const verdictCache = new Map<
-  string,
-  { timestamp: number; data: VerdictResponse }
->();
-const CACHE_TTL = 1000 * 60 * 60; // 1 hour
-
 // Helper function to map AQI index to a readable string
 const getAqiString = (aqi: number): string => {
   switch (aqi) {
@@ -96,10 +90,9 @@ function determineVerdict(
     "Smoke",
     "Haze",
     "Fog",
-  ];
-
-  // The order of these checks is important, as each can overwrite the previous message.
+  ]; // The order of these checks is important, as each can overwrite the previous message.
   // We check for conditions that most strongly suggest staying indoors last.
+
   if (badWeatherConditions.includes(weatherCondition)) {
     shouldTouchGrass = false;
     message = `It's currently ${weatherCondition.toLowerCase()}, not ideal for going out.`;
@@ -138,11 +131,6 @@ function determineVerdict(
 export async function getVerdictForCityAction(
   cityName: string,
 ): Promise<VerdictResponse> {
-  const key = `city:${cityName}`;
-  const cached = verdictCache.get(key);
-  if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
-    return cached.data;
-  }
   const apiKey = process.env.OPENWEATHERMAP_API_KEY;
   if (!apiKey) {
     console.error("OpenWeatherMap API key is not set.");
@@ -176,9 +164,8 @@ export async function getVerdictForCityAction(
       throw new Error("Received malformed weather data from API.");
     }
     const weatherData = validatedWeatherData.data;
-    const { lat, lon } = weatherData.coord;
+    const { lat, lon } = weatherData.coord; // 2. Fetch and validate air quality data
 
-    // 2. Fetch and validate air quality data
     const aqiResponse = await fetch(
       `https://api.openweathermap.org/data/2.5/air_pollution?lat=${lat}&lon=${lon}&appid=${apiKey}`,
     );
@@ -197,18 +184,15 @@ export async function getVerdictForCityAction(
       );
       throw new Error("Received malformed air quality data from API.");
     }
-    const aqiData = validatedAqiData.data;
+    const aqiData = validatedAqiData.data; // 3. Determine the verdict using the shared logic
 
-    // 3. Determine the verdict using the shared logic
     const verdict = determineVerdict(weatherData, aqiData);
     verdict.city = cityName;
-    verdictCache.set(key, { timestamp: Date.now(), data: verdict });
     return verdict;
   } catch (error: unknown) {
     const errorMessage =
       error instanceof Error ? error.message : "An unexpected error occurred.";
-    console.error("Error in getVerdictForCityAction:", errorMessage);
-    // Re-throw the specific error message to be handled by the client
+    console.error("Error in getVerdictForCityAction:", errorMessage); // Re-throw the specific error message to be handled by the client
     throw new Error(errorMessage);
   }
 }
@@ -224,11 +208,6 @@ export async function getVerdictForCoordsAction(
   latitude: number,
   longitude: number,
 ): Promise<VerdictResponse> {
-  const key = `coords:${latitude},${longitude}`;
-  const cached = verdictCache.get(key);
-  if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
-    return cached.data;
-  }
   const apiKey = process.env.OPENWEATHERMAP_API_KEY;
   if (!apiKey) {
     console.error("OpenWeatherMap API key is not set.");
@@ -258,9 +237,8 @@ export async function getVerdictForCoordsAction(
       throw new Error("Received malformed weather data from API.");
     }
     const weatherData = validatedWeatherData.data;
-    const { lat, lon } = weatherData.coord;
+    const { lat, lon } = weatherData.coord; // 2. Fetch and validate air quality data
 
-    // 2. Fetch and validate air quality data
     const aqiResponse = await fetch(
       `https://api.openweathermap.org/data/2.5/air_pollution?lat=${lat}&lon=${lon}&appid=${apiKey}`,
     );
@@ -279,17 +257,14 @@ export async function getVerdictForCoordsAction(
       );
       throw new Error("Received malformed air quality data from API.");
     }
-    const aqiData = validatedAqiData.data;
+    const aqiData = validatedAqiData.data; // 3. Determine the verdict using the shared logic
 
-    // 3. Determine the verdict using the shared logic
     const verdict = determineVerdict(weatherData, aqiData);
-    verdictCache.set(key, { timestamp: Date.now(), data: verdict });
     return verdict;
   } catch (error: unknown) {
     const errorMessage =
       error instanceof Error ? error.message : "An unexpected error occurred.";
-    console.error("Error in getVerdictForCoordsAction:", errorMessage);
-    // Re-throw the specific error message to be handled by the client
+    console.error("Error in getVerdictForCoordsAction:", errorMessage); // Re-throw the specific error message to be handled by the client
     throw new Error(errorMessage);
   }
 }
