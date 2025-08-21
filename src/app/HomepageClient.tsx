@@ -16,6 +16,7 @@ import {
 import {
   getVerdictForCityAction,
   getVerdictForCoordsAction,
+  getRandomCityVerdictAction,
   type VerdictResponse,
 } from "./actions";
 import Image from "next/image";
@@ -90,7 +91,13 @@ const ResultCard: React.FC<ResultCardProps> = ({ result }) => {
       className={`animate-fade-in-up w-full max-w-lg transform rounded-3xl p-8 shadow-2xl ring-1 ring-white/10 backdrop-blur-sm transition-all duration-500 ${cardClasses}`}
     >
       <div className="text-center">
-        <p className="text-xl font-medium text-white/80">{result.city}</p>
+        <div className="mb-4">
+          <p className="text-xl font-medium text-white/80">{result.city}</p>
+          <p className="text-md font-medium text-white/70 flex items-center justify-center gap-2">
+            <span>{result.countryFlag}</span>
+            <span>{result.country}</span>
+          </p>
+        </div>
         <h2
           className={`my-4 text-7xl font-bold md:text-8xl ${verdictTextClasses}`}
         >
@@ -141,6 +148,10 @@ const CompactResultCard: React.FC<CompactResultCardProps> = ({ result }) => {
       className={`rounded-2xl p-5 text-center ring-1 ring-white/10 transition-all duration-300 ${cardClasses}`}
     >
       <h4 className="text-lg font-bold text-white">{result.city}</h4>
+      <p className="text-sm text-white/70 flex items-center justify-center gap-1">
+        <span>{result.countryFlag}</span>
+        <span>{result.country}</span>
+      </p>
       <p
         className={`text-3xl font-bold ${isYes ? "text-green-300" : "text-slate-300"}`}
       >
@@ -173,6 +184,9 @@ export default function HomePageClient({
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [result, setResult] = useState<VerdictResponse | null>(null);
   const [error, setError] = useState<string>("");
+  
+  // Ref for scrolling to results
+  const resultRef = React.useRef<HTMLDivElement>(null);
 
   const popularCities: string[] = [
     "New York",
@@ -200,6 +214,13 @@ export default function HomePageClient({
     }
   };
 
+  // Scroll to results when they appear
+  React.useEffect(() => {
+    if (result && resultRef.current) {
+      resultRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }, [result]);
+
   const handleSearch = (e: React.FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
     if (!location) {
@@ -225,6 +246,10 @@ export default function HomePageClient({
         );
       },
     );
+  };
+
+  const handleRandomCity = (): void => {
+    void handleApiCall(getRandomCityVerdictAction());
   };
 
   return (
@@ -285,13 +310,15 @@ export default function HomePageClient({
         )}
 
         {/* --- LOADING, ERROR & RESULT STATES --- */}
-        {isLoading && <LoadingSpinner />}
-        {error && (
-          <p className="animate-fade-in bg-destructive text-destructive-foreground rounded-lg p-4 text-center">
-            {error}
-          </p>
-        )}
-        {result && <ResultCard result={result} />}
+        <div ref={resultRef}>
+          {isLoading && <LoadingSpinner />}
+          {error && (
+            <p className="animate-fade-in bg-destructive text-destructive-foreground rounded-lg p-4 text-center">
+              {error}
+            </p>
+          )}
+          {result && <ResultCard result={result} />}
+        </div>
 
         {/* --- POPULAR CITIES SECTION --- */}
         <div className="w-full pt-8">
@@ -312,6 +339,17 @@ export default function HomePageClient({
               );
             })}
           </div>
+        </div>
+
+        {/* --- RANDOM CITY BUTTON --- */}
+        <div className="w-full pt-2">
+          <button
+            onClick={handleRandomCity}
+            disabled={isLoading}
+            className="bg-purple-500 text-white hover:bg-purple-600 disabled:opacity-50 disabled:cursor-not-allowed w-full cursor-pointer rounded-full px-4 py-3.5 font-bold transition-all duration-200 disabled:scale-100 hover:scale-105 active:scale-100"
+          >
+            {isLoading ? "Searching the globe..." : "🌍 Give me a random one"}
+          </button>
         </div>
       </div>
     </main>

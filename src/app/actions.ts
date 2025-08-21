@@ -17,6 +17,9 @@ const WeatherDataSchema = z.object({
     temp: z.number(),
   }),
   name: z.string(),
+  sys: z.object({
+    country: z.string(),
+  }),
 });
 
 // Zod Schema for validating the OpenWeatherMap Air Pollution API response
@@ -39,6 +42,8 @@ export interface VerdictResponse {
   verdict: "Yes" | "No";
   message: string;
   city: string;
+  country: string;
+  countryFlag: string;
   weather: string;
   aqi: string;
   temp: string;
@@ -63,8 +68,24 @@ const getAqiString = (aqi: number): string => {
 };
 
 /**
+ * Maps country codes to their corresponding flag emojis.
+ * Uses regional indicator symbols: 🇦🇧🇨...🇿
+ */
+const getCountryFlag = (countryCode: string): string => {
+  if (countryCode.length !== 2) return "🏳️"; // Default
+  
+  const upperCaseCode = countryCode.toUpperCase();
+  if (!/^[A-Z]{2}$/.test(upperCaseCode)) return "🏳️"; // Default
+  
+  const offset = 127397; // Unicode offset for regional indicators
+  const codePoints = Array.from(upperCaseCode).map(c => c.charCodeAt(0) + offset);
+  return String.fromCodePoint(...codePoints);
+};
+
+/**
  * Core decision logic to determine the verdict based on weather and AQI data.
  * This function is shared by both server actions to avoid code duplication.
+ * It uses weather conditions, ambient temperature, and air quality index data to determine the verdict.
  * @param weatherData Validated weather data.
  * @param aqiData Validated air quality data.
  * @returns {VerdictResponse} The final verdict and associated data.
@@ -77,6 +98,8 @@ function determineVerdict(
   const temperature = weatherData.main.temp;
   const aqiIndex = aqiData.list[0]?.main.aqi;
   const aqiString = aqiIndex ? getAqiString(aqiIndex) : "Unknown";
+  const countryCode = weatherData.sys.country;
+  const countryFlag = getCountryFlag(countryCode);
 
   let shouldTouchGrass = true;
   let message = "The conditions are great. Go enjoy the outdoors!";
@@ -114,8 +137,10 @@ function determineVerdict(
 
   return {
     verdict: shouldTouchGrass ? "Yes" : "No",
-    message: message,
+    message,
     city: weatherData.name,
+    country: countryCode,
+    countryFlag: countryFlag,
     weather: weatherCondition,
     aqi: aqiString,
     temp: `${Math.round(temperature)}°C`,
@@ -197,8 +222,30 @@ export async function getVerdictForCityAction(
   }
 }
 
+// List of randomly selectable cities worldwide for the random functionality
+const RANDOM_CITIES = [
+  "Tokyo", "Jakarta", "Delhi", "Manila", "Shanghai", "Sao Paulo", "Mumbai", "Beijing", "Dhaka", "Osaka", 
+  "New York", "Karachi", "Buenos Aires", "Chongqing", "Istanbul", "Kolkata", "Manila", "Lagos", "Rio de Janeiro", "Tianjin",
+  "Guangzhou", "Los Angeles", "Moscow", "Shenzhen", "Lahore", "Bangalore", "Paris", "Bogota", "Jakarta", "Chennai",
+  "Lima", "Bangkok", "Seoul", "Nagoya", "Hyderabad", "Chicago", "Johannesburg", "Wuhan", "Kuala Lumpur", "Hangzhou",
+  "Tongshan", "Hong Kong", "Quanzhou", "Dongguan", "Santiago", "Shenyang", "Madrid", "Fuzhou", "Xianyang", "Luanda"
+];
+
 /**
- * A Next.js Server Action to get the "Should I Touch Grass?" verdict for given coordinates.
+ * A Next.js Server Action to get the "Should I Touch Grass?" verdict for a random city worldwide.
+ * It randomly selects from a predefined list of major cities and returns the verdict.
+ * @returns {Promise<VerdictResponse>} An object containing the full verdict and data for the random city.
+ */
+export async function getRandomCityVerdictAction(): Promise<VerdictResponse> {
+  // Select a random city from the predefined list
+  const randomCity = RANDOM_CITIES[Math.floor(Math.random() * RANDOM_CITIES.length)]!;
+  
+  // Reuse the existing city verdict logic
+  return getVerdictForCityAction(randomCity);
+}
+
+/**
+ * A Next.js Server Action to get the "Should I Touch Grass?" verdict for given coordinates.","}]}}}
  * It fetches and validates weather and air quality data from OpenWeatherMap.
  * @param latitude The latitude.
  * @param longitude The longitude.
